@@ -47,18 +47,23 @@ def add_post():
     data_title = sys.stdin.read().strip()
     clear()
 
-    print("\nDigite o conteúdo do post: (crtl+d para terminal)")
+    print("Digite o conteúdo do post: (crtl+d para terminal)")
     data_content = sys.stdin.read().strip()
     clear()
 
     if data_title and data_content:
-        if input('\nSalvar entrada? [Sn] ').lower() != 'n':
+        if input('Salvar entrada? [Sn] ').lower() != 'n':
             Post.create(title=data_title, content=data_content)
             print('Salvo com sucesso!')
 
-def view_posts():
+def view_posts(search_query=None, search_attr='title'):
     ''' View previues posts '''
     posts = Post.select().order_by(Post.timestamp.desc())
+
+    if search_query and search_attr == 'title':
+        posts = posts.where(Post.title.contains(search_query))
+    elif search_query and search_attr == 'content':
+        posts = posts.where(Post.content.contains(search_query))
     
     for post in posts:
         clear()
@@ -75,7 +80,7 @@ def view_posts():
         print('r) return to menu!\n')
 
         next_action = input('Action: [Ndr] ').lower().strip()
-        print()
+        clear()
         if next_action == 'r':
             break
         elif next_action == 'd':
@@ -89,9 +94,19 @@ def delete_post(post):
         post.delete_instance()
         print('Post deleted!')
 
+def search_in_title():
+    ''' Search for a string in title '''
+    view_posts( input('Search in title: ') )
+
+def search_in_content():
+    ''' Search for a string in content '''
+    view_posts( view_posts( input('Search in content: '), 'content' ) )
+
 menu = OrderedDict([
     ('a', add_post),
-    ('v', view_posts)
+    ('v', view_posts),
+    ('t', search_in_title),
+    ('c', search_in_content)
 ])
 
 if __name__ == '__main__':
