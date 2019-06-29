@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import datetime
 import os
 import sys
 
@@ -12,6 +13,7 @@ class Post(Model):
     # content
     title = CharField(max_length=255)
     content = TextField()
+    timestamp = DateTimeField(default=datetime.datetime.now)
 
     class Meta:
         database = db
@@ -55,6 +57,29 @@ def add_post():
 
 def view_posts():
     ''' View previues posts '''
+    clear()
+    posts = Post.select().order_by(Post.timestamp.desc())
+    
+    for post in posts:
+        timestamp = post.timestamp.strftime('%A %B %d, %Y %H:%M')
+        print(timestamp)
+        print('='*len(timestamp))
+        print(post.title)
+        print('='*len(timestamp))
+        print(post.content)
+        print('='*len(timestamp))
+        
+        print('\nn) next entry')
+        print('d) delete entry')
+        print('r) return to menu!\n')
+
+        next_action = input('Action: [Ndr] ').lower().strip()
+        print()
+        if next_action == 'r':
+            break
+        elif next_action == 'd':
+            pass
+            #TODO: chamar função para deletar arquivo
 
 menu = OrderedDict([
     ('a', add_post),
