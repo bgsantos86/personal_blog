@@ -49,6 +49,7 @@ def add_post():
 
     print("\nDigite o conteúdo do post: (crtl+d para terminal)")
     data_content = sys.stdin.read().strip()
+    clear()
 
     if data_title and data_content:
         if input('\nSalvar entrada? [Sn] ').lower() != 'n':
@@ -57,10 +58,10 @@ def add_post():
 
 def view_posts():
     ''' View previues posts '''
-    clear()
     posts = Post.select().order_by(Post.timestamp.desc())
     
     for post in posts:
+        clear()
         timestamp = post.timestamp.strftime('%A %B %d, %Y %H:%M')
         print(timestamp)
         print('='*len(timestamp))
@@ -79,7 +80,14 @@ def view_posts():
             break
         elif next_action == 'd':
             pass
-            #TODO: chamar função para deletar arquivo
+            delete_post(post)
+
+def delete_post(post):
+    ''' Delete a post '''
+    clear()
+    if input("Are you sure? [yN] ").lower() == 'y':
+        post.delete_instance()
+        print('Post deleted!')
 
 menu = OrderedDict([
     ('a', add_post),
