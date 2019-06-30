@@ -8,9 +8,6 @@ from peewee import *
 db = SqliteDatabase('blog.db')
 
 class Post(Model):
-    # (unique) id
-    # title
-    # content
     title = CharField(max_length=255)
     content = TextField()
     timestamp = DateTimeField(default=datetime.datetime.now)
