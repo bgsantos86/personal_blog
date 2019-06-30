@@ -1,12 +1,15 @@
 import json
 import datetime
+import logging
 
 from flask import (Flask, render_template, request, jsonify)
 from peewee import *
+from playhouse.shortcuts import model_to_dict
 
 # App configuration
 app = Flask(__name__)
 db = SqliteDatabase('blog.db')
+logging.basicConfig(filename='blog.log', level=logging.DEBUG)
 
 # Modelo - Post
 class Post(Model):
@@ -20,7 +23,6 @@ class Post(Model):
 # Inicia o banco e dados e cria a tabela
 def initialize():
     '''Create table 'Post' if they not exists. '''
-    db.connect()
     db.create_tables([Post], safe=True)
 
 # Raiz da aplicação
@@ -34,7 +36,7 @@ def add_post():
     title = request.json['title']
     content = request.json['content']
     post = Post.create(title=title, content=content)
-    return jsonify({'id': post.id})
+    return jsonify({'id': post.id, 'title': title, 'content': content, 'timestamp': str(post.timestamp)})
 
 @app.before_request
 def before_request():
