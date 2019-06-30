@@ -40,7 +40,7 @@ def menu_loop():
         if choice in menu:
             menu[choice]()
 
-def add_post():
+def add_post(update=False, post=None):
     ''' Add a post. '''
     clear()
     print("Digite o titulo do post: (crtl+d para terminal)")
@@ -53,8 +53,14 @@ def add_post():
 
     if data_title and data_content:
         if input('Salvar entrada? [Sn] ').lower() != 'n':
-            Post.create(title=data_title, content=data_content)
-            print('Salvo com sucesso!')
+            if update and post:
+                #Post.insert(title=data_title, content=data_content).on_conflict('replace').execute()
+                post.title = data_title
+                post.content = data_content
+                post.save()
+            else:
+                Post.create(title=data_title, content=data_content)
+                print('Salvo com sucesso!')
 
 def view_posts(search_query=None, search_attr='title'):
     ''' View previues posts '''
@@ -77,6 +83,7 @@ def view_posts(search_query=None, search_attr='title'):
         
         print('\nn) next entry')
         print('d) delete entry')
+        print('u) update entry')
         print('r) return to menu!\n')
 
         next_action = input('Action: [Ndr] ').lower().strip()
@@ -84,8 +91,9 @@ def view_posts(search_query=None, search_attr='title'):
         if next_action == 'r':
             break
         elif next_action == 'd':
-            pass
             delete_post(post)
+        elif next_action == 'u':
+            update_post(post.id)
 
 def delete_post(post):
     ''' Delete a post '''
@@ -101,6 +109,16 @@ def search_in_title():
 def search_in_content():
     ''' Search for a string in content '''
     view_posts( view_posts( input('Search in content: '), 'content' ) )
+
+def  search_by_id(id):
+    ''' Search by an id. '''
+    #post = Post.select().where(Post.id == id)
+    post = Post.get_by_id(id)
+    return post
+
+def update_post(id):
+    post = search_by_id(id)
+    add_post(update=True, post=post)
 
 menu = OrderedDict([
     ('a', add_post),
