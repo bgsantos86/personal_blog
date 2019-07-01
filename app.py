@@ -36,7 +36,14 @@ def add_post():
     title = request.json['title']
     content = request.json['content']
     post = Post.create(title=title, content=content)
-    return jsonify({'id': post.id, 'title': title, 'content': content, 'timestamp': str(post.timestamp)})
+    json_data = json.dumps(model_to_dict(post), default=str)
+    logging.debug(json_data)
+    return json_data
+
+# Retorna lista de post
+@app.route('/posts', methods=['GET'])
+def list_all_posts():
+    pass
 
 @app.before_request
 def before_request():
