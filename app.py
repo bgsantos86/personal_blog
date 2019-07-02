@@ -25,6 +25,17 @@ def initialize():
     '''Create table 'Post' if they not exists. '''
     db.create_tables([Post], safe=True)
 
+@app.errorhandler(404)
+def not_found(error=None):
+    message = {
+            'status': 404,
+            'message': 'Not Found: ' + request.url,
+    }
+    resp = jsonify(message)
+    resp.status_code = 404
+
+    return resp
+
 # Raiz da aplicação
 @app.route('/', methods=['GET'])
 def index():
@@ -42,7 +53,7 @@ def add_post():
 
 # Retorna lista de post
 @app.route('/posts', methods=['GET'])
-def list_all_posts():
+def get_posts():
     posts = Post.select().order_by(Post.timestamp.desc())
     array_posts = []
     json_response = {'lista': array_posts}
@@ -54,8 +65,19 @@ def list_all_posts():
 
     response = Response(json.dumps(json_response, default=str), status=200, mimetype='application/json')
     logging.debug(response)
-
     return response
+
+# Busca um post por id e retorna
+@app.route('/post/<postid>', methods=['GET'])
+def get_post(postid):
+    try:
+        post = Post.get_by_id(int(postid))
+        json_data = json.dumps(model_to_dict(post), default=str)
+        logging.debug(json_data)
+        response = Response(json_data, status=200, mimetype='application/json')
+        return response
+    except:
+        return not_found()
 
 
 @app.before_request
