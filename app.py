@@ -2,7 +2,7 @@ import json
 import datetime
 import logging
 
-from flask import (Flask, render_template, request, jsonify)
+from flask import (Flask, render_template, request, jsonify, Response)
 from peewee import *
 from playhouse.shortcuts import model_to_dict
 
@@ -43,7 +43,20 @@ def add_post():
 # Retorna lista de post
 @app.route('/posts', methods=['GET'])
 def list_all_posts():
-    pass
+    posts = Post.select().order_by(Post.timestamp.desc())
+    array_posts = []
+    json_response = {'lista': array_posts}
+
+    for post in posts:
+        json_data = json.dumps(model_to_dict(post), default=str)
+        array_posts.append(json_data)
+    logging.debug(json_response)
+
+    response = Response(json.dumps(json_response, default=str), status=200, mimetype='application/json')
+    logging.debug(response)
+
+    return response
+
 
 @app.before_request
 def before_request():
