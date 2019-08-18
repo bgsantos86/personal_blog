@@ -51,7 +51,6 @@ def add_post(update=False, post=None):
     if data_title and data_content:
         if input('Salvar entrada? [Sn] ').lower() != 'n':
             if update and post:
-                #Post.insert(title=data_title, content=data_content).on_conflict('replace').execute()
                 post.title = data_title
                 post.content = data_content
                 post.save()

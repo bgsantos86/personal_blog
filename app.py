@@ -7,6 +7,11 @@ from peewee import *
 from playhouse.shortcuts import model_to_dict
 
 # App configuration
+DEBUG = True
+HOST = '0.0.0.0'
+PORT = 8080
+
+
 app = Flask(__name__)
 db = SqliteDatabase('blog.db')
 logging.basicConfig(filename='blog.log', level=logging.DEBUG)
@@ -86,4 +91,4 @@ def before_request():
 
 if __name__ == '__main__':
     initialize()
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    app.run(debug=DEBUG, host=HOST, port=PORT)

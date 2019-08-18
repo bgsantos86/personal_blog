@@ -2,3 +2,4 @@
 mb/
 blog.db
 blog.log
+__pycache__/
